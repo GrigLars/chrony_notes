@@ -17,9 +17,21 @@ Pretty straight forward.  I am using Debian's "apt" here, on Ubuntu, but you can
 
     sudo apt install chrony 
 
-#### I had a lot of config file weirdness I had to fix 
+#### Then it wouldn't work
 
-For reasons I am unable to explain, a lot of the conf files were put in /etc or referred to as such.  To save yourself a lot of headache, make sure everything is in /etc/chrony and move anything from /etc to there. In my case, some files were in BOTH places, and I was editing the wrong one. Most other services depend on everything being in /etc/chrony/ like systemd which I had to find out the hard way.
+Then I had to test the server from a client.
+
+    sudo chronyd -q 'server 192.168.9.2 iburst'
+    2021-09-11T21:21:16Z chronyd version 3.2 starting (+CMDMON +NTP +REFCLOCK +RTC +PRIVDROP +SCFILTER +SECHASH +SIGND +ASYNCDNS +IPV6 -DEBUG)
+    2021-09-11T21:21:16Z Initial frequency -5.571 ppm
+    2021-09-11T21:21:27Z No suitable source for synchronisation
+    2021-09-11T21:21:27Z chronyd exiting
+
+#### I had to fix a lot of config file weirdness 
+
+Was my firewall up?  No, I have no firewall on this internal network.  I did a HECK of of a lot of searching.  I did tcpdump and showed that requests were being sent to ntp.  The problem is, all distros have files in different places, and some people were doing different thngs than I wanted to do.  A majority of help guides just assumed everything worked out of the box or my clients were fine with ntp.ubuntu.com pools.  It took a day to gather all these notes of things I had to change on Ubuntu 18.04 LTS with systemd.
+
+For reasons I am unable to explain, a lot of the conf files were put in /etc and/or referred to as such.  To save yourself a lot of headache, make sure everything is in /etc/chrony and move anything from /etc to there. In my case, some files were in BOTH places, and I was editing the wrong one. Most other services depend on everything being in /etc/chrony/ like systemd which I had to find out the hard way.
 
     mv /etc/chrony.conf /etc/chrony/chrony.conf
     mv /etc/chrony.keys /etc/chrony/chrony.keys
@@ -113,3 +125,34 @@ In your dnsmasq.conf of your dnsmasq DHCP service, you can also set the time ser
     # is running dnsmasq is another option.
     #dhcp-option=42,0.0.0.0
     
+
+#### Now it's working!
+
+    sudo chronyd -q 'server 192.168.9.2 iburst'
+    2021-09-11T23:39:51Z chronyd version 3.2 starting (+CMDMON +NTP +REFCLOCK +RTC +PRIVDROP +SCFILTER +SECHASH +SIGND +ASYNCDNS +IPV6 -DEBUG)
+    2021-09-11T23:39:51Z Initial frequency -7.027 ppm
+    2021-09-11T23:39:55Z System clock wrong by -0.000577 seconds (step)
+    2021-09-11T23:39:55Z chronyd exiting
+
+    chronyc sources -v
+    210 Number of sources = 1
+
+      .-- Source mode  '^' = server, '=' = peer, '#' = local clock.
+     / .- Source state '*' = current synced, '+' = combined , '-' = not combined,
+    | /   '?' = unreachable, 'x' = time may be in error, '~' = time too variable.
+    ||                                                 .- xxxx [ yyyy ] +/- zzzz
+    ||      Reachability register (octal) -.           |  xxxx = adjusted offset,
+    ||      Log2(Polling interval) --.      |          |  yyyy = measured offset,
+    ||                                \     |          |  zzzz = estimated error.
+    ||                                 |    |           \
+    MS Name/IP address         Stratum Poll Reach LastRx Last sample               
+    ===============================================================================
+    ^* yakko                         2   9   377   495  -1212us[-1305us] +/-   18ms
+
+    chronyc sourcestats 
+    210 Number of sources = 1
+    Name/IP Address            NP  NR  Span  Frequency  Freq Skew  Offset  Std Dev
+    ==============================================================================
+    yakko                      26  12   61m     -0.019      0.571    -87ns   650us
+
+But OMG that took so long to figure all out.  I hope my pain saves someone else some headache. 
