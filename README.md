@@ -147,12 +147,12 @@ In your dnsmasq.conf of your dnsmasq DHCP service, you can also set the time ser
     ||                                 |    |           \
     MS Name/IP address         Stratum Poll Reach LastRx Last sample               
     ===============================================================================
-    ^* yakko                         2   9   377   495  -1212us[-1305us] +/-   18ms
+    ^* my-timeserver                 2   9   377   495  -1212us[-1305us] +/-   18ms
 
     chronyc sourcestats 
     210 Number of sources = 1
     Name/IP Address            NP  NR  Span  Frequency  Freq Skew  Offset  Std Dev
     ==============================================================================
-    yakko                      26  12   61m     -0.019      0.571    -87ns   650us
+    my-timeserver              26  12   61m     -0.019      0.571    -87ns   650us
 
 But OMG that took so long to figure all out.  I hope my pain saves someone else some headache. 
