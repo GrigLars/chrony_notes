@@ -125,6 +125,19 @@ If you had to make changes, you need to reload systemd:
     sudo timedatectl set-ntp on
     sudo systemctl status systemd-timesyncd
 
+Now we have to make sure there are no funny optional stuff in the /etc/default/chrony ... mine looked good, I didn't have to change anything.
+
+    # This is a configuration file for /etc/init.d/chrony and
+    # /lib/systemd/system/chrony.service; it allows you to pass various options to
+    # the chrony daemon without editing the init script or service file.
+
+    # Options to pass to chrony.
+    DAEMON_OPTS=""
+
+    # Sync systecm clock in containers or without CAP_SYS_TIME (likely to fail)
+    # See /usr/share/doc/chrony/README.container for details.
+    SYNC_IN_CONTAINER="no"
+
 In your dnsmasq.conf of your dnsmasq DHCP service, you can also set the time servers like I did.
 
     # Set the NTP time server addresses to 192.168.0.4 and 10.10.0.5
@@ -135,7 +148,6 @@ In your dnsmasq.conf of your dnsmasq DHCP service, you can also set the time ser
     # is running dnsmasq is another option.
     #dhcp-option=42,0.0.0.0
     
-
 #### Now it's working!
 
     sudo chronyd -q 'server 192.168.9.2 iburst'
