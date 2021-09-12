@@ -29,9 +29,9 @@ Then I had to test the server from a client.
 
 #### I had to fix a lot of config file weirdness 
 
-Was my firewall up?  No, I have no firewall on this internal network.  I did a HECK of of a lot of searching.  I did tcpdump and showed that requests were being sent to ntp.  The problem is, all distros have files in different places, and some people were doing different thngs than I wanted to do.  A majority of help guides just assumed everything worked out of the box or my clients were fine with ntp.ubuntu.com pools.  It took a day to gather all these notes of things I had to change on Ubuntu 18.04 LTS with systemd.
+Was my firewall up?  No, I have no firewall on this internal network.  I did a HECK of of a lot of searching.  I did tcpdump and showed that requests were being sent to ntp.  The problem is, all distros have files in different places, and some people were doing different things than I wanted to do.  A majority of help guides just assumed everything worked out of the box or my clients were fine with ntp.ubuntu.com pools.  It took a day to gather all these notes of things I had to change on Ubuntu 18.04 LTS with systemd.
 
-For reasons I am unable to explain, a lot of the conf files were put in /etc and/or referred to as such.  To save yourself a lot of headache, make sure everything is in /etc/chrony and move anything from /etc to there. In my case, some files were in BOTH places, and I was editing the wrong one. Most other services depend on everything being in /etc/chrony/ like systemd which I had to find out the hard way.
+For reasons I am unable to explain, a lot of the confinguration files were put in /etc and/or referred to as such.  To save yourself a lot of headache, make sure everything is in the directory /etc/chrony and move anything from /etc to there. In my case, some files were in BOTH places, and I was editing the wrong one. Most other services depend on everything being in /etc/chrony/ like systemd which I had to find out the hard way.
 
     mv /etc/chrony.conf /etc/chrony/chrony.conf
     mv /etc/chrony.keys /etc/chrony/chrony.keys
