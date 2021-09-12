@@ -39,6 +39,16 @@ For reasons I am unable to explain, a lot of the conf files were put in /etc and
 
 In the config file /etc/chrony/chrony.conf, change everything to reflect the new place. If they are already there and correct, YAY! You're ahead of the game. Give yourself a cookie. In this git repo, find my server config with notes.
 
+The systemd profile located at /lib/systemd/system/chrony.service had the pid file as /run/chronyd.pid, and then I got an apparmor error in my syslog file because the /etc/apparmor.d/usr.sbun/chronyd did not have access to the directory /run
+
+    Sep 11 15:35:16 my-timeserver kernel: [6475067.884205] audit: type=1400 audit(1631388916.400:25): apparmor="DENIED" operation="open" profile="/usr/sbin/chronyd" name="/run/chronyd.pid" pid=25753 comm="chronyd" requested_mask="r" denied_mask="r" fsuid=0 ouid=0
+    Sep 11 15:35:39 my-timeserver kernel: [6475091.199493] audit: type=1400 audit(1631388939.719:26): apparmor="DENIED" operation="open" profile="/usr/sbin/chronyd" name="/run/chronyd.pid" pid=25784 comm="chronyd" requested_mask="r" denied_mask="r" fsuid=0 ouid=0
+    Sep 11 15:46:56 my-timeserver kernel: [6475768.311526] audit: type=1400 audit(1631389616.832:27): apparmor="DENIED" operation="open" profile="/usr/sbin/chronyd" name="/run/chronyd.pid" pid=26705 comm="chronyd" requested_mask="r" denied_mask="r" fsuid=0 ouid=0
+
+I had to make sure that the pid file was /var/run/chrony.pid in both /etc/chrony/chrony.conf AND /lib/systemd/system/chrony.service to get this nonsense to stop. Don't forget to reload systemd!
+
+    sudo systemctl daemon-reload
+
 #### Why the hell are my clients using other time sources?
 
 Man, this was a stumper. Here's an example output.  In this readout of "chronyc sources -v," my-timeserver is the correct one.  The 192.168.1.1 was an old, old gateway/router I haven't used for years, so of course it wasn't giving correct time.  And I didn't want time1.google.com AND my local time server "combined," because they'd always have some kind of difference simply due to comparitive network latency.
