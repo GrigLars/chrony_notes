@@ -142,7 +142,7 @@ In your dnsmasq.conf of your dnsmasq DHCP service, you can also set the time ser
 
     # Set the NTP time server addresses to 192.168.0.4 and 10.10.0.5
     #dhcp-option=option:ntp-server,192.168.0.4,10.10.0.5
-    dhcp-option=option:ntp-server,192.168.9.1
+    dhcp-option=option:ntp-server,192.168.9.2
 
     # Set the NTP time server address to be the same machine as
     # is running dnsmasq is another option.
